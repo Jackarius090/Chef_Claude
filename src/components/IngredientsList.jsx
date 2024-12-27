@@ -1,11 +1,11 @@
 export default function IngredientsList({
   ingredientsListItems,
   ingredients,
-  showRecipe,
+  getRecipeFromOpenAI,
 }) {
   return (
     <section>
-      {ingredients.length > 0 && <h1>Ingriedients on hand:</h1>}
+      {ingredients.length > 0 && <h1>Ingredients on hand:</h1>}
       <article className="ingredient-list">
         <ul>{ingredientsListItems}</ul>
       </article>
@@ -15,7 +15,7 @@ export default function IngredientsList({
             <h3>Ready for a recipe?</h3>
             <p>Generate a recipe from your list of ingredients.</p>
           </div>
-          <button onClick={showRecipe}>Get a recipe</button>
+          <button onClick={getRecipeFromOpenAI}>Get a recipe</button>
         </div>
       )}
     </section>

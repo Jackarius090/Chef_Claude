@@ -21,23 +21,11 @@ export default function Main() {
   }
 
   const [recipe, setRecipe] = useState();
-  console.log(recipe);
 
-  const getRecipeFromOpenAI = async (ingredientsArray) => {
-    try {
-      const recipe = await getRecipeFromAI(ingredientsArray);
-      setRecipe(recipe);
-      console.log(recipe);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const [recipeShown, setRecipeShown] = useState(false);
-  const showRecipe = () => {
-    setRecipeShown((prev) => !prev);
-    getRecipeFromOpenAI(ingredients);
-  };
+  async function getRecipeFromOpenAI() {
+    const recipeMarkdown = await getRecipeFromAI(ingredients);
+    setRecipe(recipeMarkdown);
+  }
 
   return (
     <main>
@@ -48,10 +36,10 @@ export default function Main() {
 
       <IngredientsList
         ingredientsListItems={ingredientsListItems}
-        showRecipe={showRecipe}
         ingredients={ingredients}
+        getRecipeFromOpenAI={getRecipeFromOpenAI}
       />
-      {recipeShown && <ClaudeRecipe recipe={recipe} />}
+      {recipe && <ClaudeRecipe recipe={recipe} />}
     </main>
   );
 }
