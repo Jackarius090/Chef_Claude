@@ -1,7 +1,15 @@
 import { useState } from "react";
+import ClaudeRecipe from "./ClaudeRecipe.jsx";
+import IngredientsList from "./IngredientsList";
+import { getRecipeFromAI } from "../ai";
 
 export default function Main() {
-  const [ingredients, setIngredients] = useState([]);
+  const [ingredients, setIngredients] = useState([
+    "apple",
+    "banana",
+    "carrot",
+    "dill",
+  ]);
 
   const ingredientsListItems = ingredients.map((ingredient, i) => (
     <li key={i}> {ingredient}</li>
@@ -12,9 +20,23 @@ export default function Main() {
     setIngredients((prev) => [...prev, newIngredient]);
   }
 
+  const [recipe, setRecipe] = useState();
+  console.log(recipe);
+
+  const getRecipeFromOpenAI = async (ingredientsArray) => {
+    try {
+      const recipe = await getRecipeFromAI(ingredientsArray);
+      setRecipe(recipe);
+      console.log(recipe);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const [recipeShown, setRecipeShown] = useState(false);
   const showRecipe = () => {
     setRecipeShown((prev) => !prev);
+    getRecipeFromOpenAI(ingredients);
   };
 
   return (
@@ -23,84 +45,13 @@ export default function Main() {
         <input name="ingredient" aria-label="Add ingredient" type="text" />
         <button>Submit</button>
       </form>
-      <section>
-        {ingredients.length > 0 && <h1>Ingriedients on hand:</h1>}
-        <article className="ingredient-list">
-          <ul>{ingredientsListItems}</ul>
-        </article>
-        {ingredients.length > 3 && (
-          <div className="get-recipe-container">
-            <div>
-              <h3>Ready for a recipe?</h3>
-              <p>Generate a recipe from your list of ingredients.</p>
-            </div>
-            <button onClick={showRecipe}>Get a recipe</button>
-          </div>
-        )}
-      </section>
-      {recipeShown && (
-        <section>
-          <h2>Chef Claude Recommends:</h2>
-          <article className="suggested-recipe-container" aria-live="polite">
-            <p>
-              Based on the ingredients you have available, I would recommend
-              making a simple a delicious <strong>Beef Bolognese Pasta</strong>.
-              Here is the recipe:
-            </p>
-            <h3>Beef Bolognese Pasta</h3>
-            <strong>Ingredients:</strong>
-            <ul>
-              <li>1 lb. ground beef</li>
-              <li>1 onion, diced</li>
-              <li>3 cloves garlic, minced</li>
-              <li>2 tablespoons tomato paste</li>
-              <li>1 (28 oz) can crushed tomatoes</li>
-              <li>1 cup beef broth</li>
-              <li>1 teaspoon dried oregano</li>
-              <li>1 teaspoon dried basil</li>
-              <li>Salt and pepper to taste</li>
-              <li>
-                8 oz pasta of your choice (e.g., spaghetti, penne, or linguine)
-              </li>
-            </ul>
-            <strong>Instructions:</strong>
-            <ol>
-              <li>
-                Bring a large pot of salted water to a boil for the pasta.
-              </li>
-              <li>
-                In a large skillet or Dutch oven, cook the ground beef over
-                medium-high heat, breaking it up with a wooden spoon, until
-                browned and cooked through, about 5-7 minutes.
-              </li>
-              <li>
-                Add the diced onion and minced garlic to the skillet and cook
-                for 2-3 minutes, until the onion is translucent.
-              </li>
-              <li>Stir in the tomato paste and cook for 1 minute.</li>
-              <li>
-                Add the crushed tomatoes, beef broth, oregano, and basil. Season
-                with salt and pepper to taste.
-              </li>
-              <li>
-                Reduce the heat to low and let the sauce simmer for 15-20
-                minutes, stirring occasionally, to allow the flavors to meld.
-              </li>
-              <li>
-                While the sauce is simmering, cook the pasta according to the
-                package instructions. Drain the pasta and return it to the pot.
-              </li>
-              <li>
-                Add the Bolognese sauce to the cooked pasta and toss to combine.
-              </li>
-              <li>
-                Serve hot, garnished with additional fresh basil or grated
-                Parmesan cheese if desired.
-              </li>
-            </ol>
-          </article>
-        </section>
-      )}
+
+      <IngredientsList
+        ingredientsListItems={ingredientsListItems}
+        showRecipe={showRecipe}
+        ingredients={ingredients}
+      />
+      {recipeShown && <ClaudeRecipe recipe={recipe} />}
     </main>
   );
 }
