@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import ClaudeRecipe from "./ClaudeRecipe.jsx";
 import IngredientsList from "./IngredientsList";
 import { getRecipeFromAI } from "../ai";
@@ -21,11 +21,18 @@ export default function Main() {
   }
 
   const [recipe, setRecipe] = useState();
+  const recipeSection = useRef(null);
 
   async function getRecipeFromOpenAI() {
     const recipeMarkdown = await getRecipeFromAI(ingredients);
     setRecipe(recipeMarkdown);
   }
+
+  useEffect(() => {
+    if (recipeSection.current !== null && recipe !== "") {
+      recipeSection.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [recipe]);
 
   return (
     <main>
@@ -38,6 +45,7 @@ export default function Main() {
         ingredientsListItems={ingredientsListItems}
         ingredients={ingredients}
         getRecipeFromOpenAI={getRecipeFromOpenAI}
+        ref={recipeSection}
       />
       {recipe && <ClaudeRecipe recipe={recipe} />}
     </main>
